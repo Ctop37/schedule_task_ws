@@ -135,7 +135,6 @@ function calcGroupCrit(group) {
 }
 
 router.use(function (req, res, next) {
-  console.log("GET GROUPS");
   connection.query(query_get_groups, function (err, rows, fields) {
     if (err) throw err;
     groups = rows;
@@ -145,7 +144,6 @@ router.use(function (req, res, next) {
 });
 
 router.use(function (req, res, next) {
-  console.log("GET TASKS");
   connection.query(query_get_tasks, function (err, rows, fields) {
     if (err) throw err;
     tasks = rows;
@@ -155,7 +153,6 @@ router.use(function (req, res, next) {
 });
 
 router.use(function (req, res, next) {
-  console.log("GET HISTORY");
   connection.query(query_get_history, function (err, rows, fields) {
     if (err) throw err;
     history = rows;
@@ -197,8 +194,8 @@ router.get('/', function (req, res, next) {
   })
 
 
-  console.log("Result");
-  console.log(result);
+  //console.log("Result");
+  //console.log(result);
 
   res.send(result);
 });

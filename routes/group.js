@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var connection = require('../database/mysql')
 
+const { check } = require('express-validator/check')
+
 var query_get_groups = "SELECT * FROM todo_task.group g ORDER BY g.id asc";
 var query_get_tasks = "SELECT * FROM todo_task.task t ORDER BY t.id asc";
 var query_get_history = "SELECT * FROM todo_task.task_history h ORDER BY h.date desc";
@@ -55,7 +57,7 @@ function getGroupHist(group) {
     });
   }
   // We filter history based on this array
-  return history.filter(h => array.includes(h.id));
+  return history.filter(h => array.includes(h.id_task));
 }
 
 /**
@@ -134,6 +136,9 @@ function calcGroupCrit(group) {
   return calcCrit(group, groupHist);
 }
 
+// Middleware used to retrieve database data
+// We wait for each query before going to the next function
+// get the groups
 router.use(function (req, res, next) {
   connection.query(query_get_groups, function (err, rows, fields) {
     if (err) throw err;
@@ -143,6 +148,7 @@ router.use(function (req, res, next) {
 
 });
 
+// get the tasks
 router.use(function (req, res, next) {
   connection.query(query_get_tasks, function (err, rows, fields) {
     if (err) throw err;
@@ -152,6 +158,7 @@ router.use(function (req, res, next) {
 
 });
 
+// get history
 router.use(function (req, res, next) {
   connection.query(query_get_history, function (err, rows, fields) {
     if (err) throw err;
@@ -161,6 +168,7 @@ router.use(function (req, res, next) {
 
 });
 
+// process
 router.get('/', function (req, res, next) {
   result = JSON.parse(JSON.stringify(groups));
 
@@ -192,10 +200,6 @@ router.get('/', function (req, res, next) {
   result.forEach(group => {
     group.criticity = calcGroupCrit(group);
   })
-
-
-  //console.log("Result");
-  //console.log(result);
 
   res.send(result);
 });
